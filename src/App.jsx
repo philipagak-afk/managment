@@ -15,18 +15,19 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<ProtectedLayout />}>
-          <Route path="" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="products" element={<Products />} />
-            <Route path="categories" element={<Categories />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
+        <Route element={<ProtectedLayout/>}>
+          
+        <Route path="" element={<Layout />} >
+        <Route index element={<Home/>}/>
+        <Route path="products" element={<Products/>}/>
+        <Route path="categories" element={<Categories/>}/>
+        <Route path="profile" element={<Profile/>}/>
+        <Route path="settings" element={<Settings/>}/>
+        </Route>
         </Route>
         <Route path="signin" element={<Signin />} />
         <Route path="signup" element={<Signup />} />
-        <Route path="reset" element={<Reset />} />
+        <Route path="reset" element={<Reset/>}/>
       </Routes>
     </BrowserRouter>
   );
