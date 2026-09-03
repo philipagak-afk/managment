@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router";
 import fiscal from "../assets/fiscal.jpg";
 import { useState } from "react";
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../firebase";
 import toast from "react-hot-toast";
 function Signup() {
@@ -90,6 +90,44 @@ signInWithPopup(auth, provider)
     
   }
 
+  const handleSignInWithGithub = () => {
+    setisLoading(true);
+  setError("")
+  const provider = new GithubAuthProvider();
+provider.addScope('repo');
+provider.setCustomParameters({
+  'allow_signup': 'false'
+});
+
+const auth = getAuth();
+signInWithPopup(auth, provider)
+  .then((result) => {
+    // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+    const credential = GithubAuthProvider.credentialFromResult(result);
+    const token = credential.accessToken;
+
+    // The signed-in user info.
+    const user = result.user;
+    // IdP data available using getAdditionalUserInfo(result)
+    // ...
+    navigate("/");
+    toast.success("Account created successfully")
+  }).catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    const credential = GithubAuthProvider.credentialFromError(error);
+    // ...
+  })
+  .finally(() => {
+    setisLoading(false);
+  });
+  }
+  
+
   return (
     <div className="auth">
       <form className="left" onSubmit={handleSignup}>
@@ -129,6 +167,7 @@ signInWithPopup(auth, provider)
           {isLoading ? "Signing up.." : "Create Account"}
         </button>
         <button type="button" onClick={handleSignInWithGoogle}>signIn With Google</button>
+        <button type="button" onClick={handleSignInWithGithub}>sign Up with Github</button>
         <p>
           Already a User? <Link to="/signin">Sign In</Link>
         </p>
