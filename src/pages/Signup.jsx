@@ -1,9 +1,15 @@
 import { Link, useNavigate } from "react-router";
 import fiscal from "../assets/fiscal.jpg";
 import { useState } from "react";
-import { createUserWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../firebase";
+import {
+  createUserWithEmailAndPassword,
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
+import { auth, db } from "../firebase";
 import toast from "react-hot-toast";
+import { doc, setDoc } from "firebase/firestore";
 function Signup() {
   const [user, setUser] = useState({
     name: "",
@@ -23,20 +29,32 @@ function Signup() {
       if (!name || !email || !password) return;
 
       // firebase.auth().createUserWithEmailAndPassword(email, password).then(()=> {}).catch(error)=>{})
-        await createUserWithEmailAndPassword(
+      const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password,
       );
-      // console.log(userCredential);
 
-      setUser({
-        name: "",
-        email: "",
-        password: "",
-      });
-      navigate("/");
-      toast.success("Account created successfully");
+      if (userCredential.user) {
+        // console.log(userCredential);
+        const newUSer = {
+          name,
+          email,
+          createdOn: userCredential.user.metadata.creationTime,
+          userId: userCredential.user.uid,
+        };
+        const docRef = doc(db, "users", userCredential.user.uid);
+
+        await setDoc(docRef, newUSer);
+
+        setUser({
+          name: "",
+          email: "",
+          password: "",
+        });
+        navigate("/");
+        toast.success("Account created successfully");
+      }
     } catch (err) {
       console.error(err.message);
       setError(err.message);
@@ -46,87 +64,126 @@ function Signup() {
     }
   };
 
-  const handleSignInWithGoogle = ()=>{
-    
-      setisLoading(true)
-      setError("")
-     
+  const handleSignInWithGoogle = () => {
+    setisLoading(true);
+    setError("");
 
-const provider = new GoogleAuthProvider();
+    const provider = new GoogleAuthProvider();
 
-provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+    provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
 
-// auth.languageCode = 'it';
-// To apply the default browser preference instead of explicitly setting it.
-auth.useDeviceLanguage()
-provider.setCustomParameters({
-  'login_hint': 'user@example.com'
-});
+    // auth.languageCode = 'it';
+    // To apply the default browser preference instead of explicitly setting it.
+    auth.useDeviceLanguage();
+    provider.setCustomParameters({
+      login_hint: "user@example.com",
+    });
 
-signInWithPopup(auth, provider)
-  .then((result) => {
-    // This gives you a Google Access Token. You can use it to access the Google API.
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const token = credential.accessToken;
-    // The signed-in user info.
-    const user = result.user;
-    console.log(user);
-    
-    // IdP data available using getAdditionalUserInfo(result)
-    // ...
-  }).catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    setError(errorMessage)
-    // The email of the user's account used.
-    const email = error.customData.email;
-    // The AuthCredential type that was used.
-    const credential = GoogleAuthProvider.credentialFromError(error);
-    // ...
-  }).finally(()=>{
-    setisLoading(false)
-  });
-    
-  }
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        // console.log(user);
+
+        if (user) {
+          const newUser = {
+            name: user.displayName,
+            email: user.email,
+            createdOn: user.metadata.creationTime,
+            userId: user.uid,
+            provider: user.providerId,
+          };
+          const docRef = doc(db, "users", user.uid);
+
+          setDoc(docRef, newUser)
+            .then(() => {
+              navigate("/");
+              toast.success("Account created successfully");
+            })
+            .catch((err) => {
+              console.error(err);
+              setError(err.message || "failed to create account");
+            });
+        }
+
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        // const errorCode = error.code;
+        const errorMessage = error.message;
+        setError(errorMessage);
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+      })
+      .finally(() => {
+        setisLoading(false);
+      });
+  };
 
   const handleSignInWithGithub = () => {
     setisLoading(true);
-  setError("")
-  const provider = new GithubAuthProvider();
-provider.addScope('repo');
-provider.setCustomParameters({
-  'allow_signup': 'false'
-});
+    setError("");
+    const provider = new GithubAuthProvider();
+    provider.addScope("repo");
+    provider.setCustomParameters({
+      allow_signup: "false",
+    });
 
-const auth = getAuth();
-signInWithPopup(auth, provider)
-  .then((result) => {
-    // This gives you a GitHub Access Token. You can use it to access the GitHub API.
-    const credential = GithubAuthProvider.credentialFromResult(result);
-    const token = credential.accessToken;
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+        const credential = GithubAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
 
-    // The signed-in user info.
-    const user = result.user;
-    // IdP data available using getAdditionalUserInfo(result)
-    // ...
-    navigate("/");
-    toast.success("Account created successfully")
-  }).catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.customData.email;
-    // The AuthCredential type that was used.
-    const credential = GithubAuthProvider.credentialFromError(error);
-    // ...
-  })
-  .finally(() => {
-    setisLoading(false);
-  });
-  }
-  
+        // The signed-in user info.
+        const user = result.user;
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+
+        if (user) {
+          const newUser = {
+            name: user.displayName,
+            email: user.providerData[0].email,
+            createdOn: user.metadata.creationTime,
+            userId: user.uid,
+            provider: user.providerId,
+          };
+          const docRef = doc(db, "users", user.uid);
+
+          setDoc(docRef, newUser)
+            .then(() => {
+              navigate("/");
+              toast.success("Account created successfully");
+            })
+            .catch((err) => {
+              console.error(err);
+              setError(err.message || "failed to create account");
+            });
+        }
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        setError(errorMessage);
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GithubAuthProvider.credentialFromError(error);
+        // ...
+      })
+      .finally(() => {
+        setisLoading(false);
+      });
+  };
 
   return (
     <div className="auth">
@@ -163,11 +220,15 @@ signInWithPopup(auth, provider)
           id=""
         />
         {error && <p className="error">{error}</p>}
-        <button disabled={isLoading} type="submit">
+        <button type="submit" disabled={isLoading}>
           {isLoading ? "Signing up.." : "Create Account"}
         </button>
-        <button type="button" onClick={handleSignInWithGoogle}>signIn With Google</button>
-        <button type="button" onClick={handleSignInWithGithub}>sign Up with Github</button>
+        <button type="button" onClick={handleSignInWithGoogle}>
+          Sign Up With Google
+        </button>
+        <button type="button" onClick={handleSignInWithGithub}>
+          Sign Up With Github
+        </button>
         <p>
           Already a User? <Link to="/signin">Sign In</Link>
         </p>
