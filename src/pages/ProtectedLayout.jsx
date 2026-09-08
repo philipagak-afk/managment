@@ -1,6 +1,7 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router";
+import Loader from "../components/Loader";
 
 // i.e. firebase.auth().onAuthStateChanged((user)=> //.....)
 function ProtectedLayout() {
@@ -16,7 +17,13 @@ const auth = getAuth()
     return () => unsub();
   }, [auth]);
 
-  if(loading) return <p>Loading...</p>
+  if(loading) 
+    return (
+  <div className="loader-container">
+    <Loader />
+  </div>
+  );
+    
 
   if(!isAuthenticated)  return <Navigate to={"/signin"} replace={true}/>
   return <Outlet/>

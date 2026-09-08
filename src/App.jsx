@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import "./App.css";
 import Layout from "./pages/Layout";
 import Signin from "./pages/Signin";
