@@ -1,40 +1,38 @@
 import { Table } from "react-bootstrap";
+import { useProducts } from "../hooks/useProducts";
+// import { useProducts } from "../hooks/useProducts";
 
 
 function ProductsTable() {
+
+  const {products} = useProducts()
+
+  console.log(products);
+  
    return (
     <Table striped bordered hover>
       <thead>
         <tr>
-          <th>#</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Username</th>
+          
+          <th>Name</th>
+          <th>Category</th>
+          <th>Stock</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>1</td>
-          <td>Mark</td>
-          <td>Otto</td>
-          <td>@mdo</td>
+        {
+          products?.map((product)=>(
+            <tr key={product.id}>
+          <td>{product.name}</td>
+          <td>{product.category}</td>
+          <td>{product.stock === 1 ? `${product.stock} item`: `${product.stock} items` }</td>
         </tr>
-        <tr>
-          <td>2</td>
-          <td>Jacob</td>
-          <td>Thornton</td>
-          <td>@fat</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td colSpan={2}>Larry the Bird</td>
-          <td>@twitter</td>
-        </tr>
+          ))
+        }
+        
       </tbody>
     </Table>
   );
 }
-
-
 
 export default ProductsTable
