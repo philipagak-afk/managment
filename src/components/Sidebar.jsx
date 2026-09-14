@@ -3,7 +3,8 @@ import { MdHomeFilled } from "react-icons/md";
 import { FiBox } from "react-icons/fi";
 import { LuBoxes } from "react-icons/lu";
 import { FaCog } from "react-icons/fa";
-import SignoutModal from "./signoutModal";
+import SignoutModal from "./signoutModalChakra";
+// import SignoutModal from "./signoutModal";
 
 function Sidebar() {
   const links = [

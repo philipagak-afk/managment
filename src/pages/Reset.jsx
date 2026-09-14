@@ -1,24 +1,46 @@
 import { Link } from "react-router";
 import fiscal from "../assets/fiscal.jpg";
+import { useState } from "react";
+import { auth } from "../firebase";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 function Reset() {
-  return (
+
+const [email, setEmail] = useState("");
+const [isLoading, setIsLoading] = useState(false);
+const [error, setError] = useState("");
+const handleSendResetEmail = async (e)=> {
+  e.preventDefault();
+  try{
+    setIsLoading(true);
+    setError("");
+
+    if(!email) return;
+
+    await sendPasswordResetEmail(auth, email);
+  }catch (err) {
+    console.error(err.message);
+
+    setError(err.message);
+  }finally{
+    setIsLoading(false);
+  }
+}  
+return (
     <div>
-       <form className="left">
+       <form className="left" onSubmit={handleSendResetEmail}>
         <h2>Reset Password</h2>
         <input
+         value ={email}
+          onChange={(e) => setEmail(e.target.value)}
           type="email"
           placeholder="Enter your Email Address"
           name=""
           id=""
         />
-        <input
-          type="password"
-          placeholder="Enter your Password"
-          name=""
-          id=""
-        />
-        <button>Send email</button>
+        {error && <p className="error">{error}</p>}
+          <button>{isLoading? "sending email..":"send email"}</button>
+      
         <div className="redirect">
           <p>
             Remembered your pasword?/
