@@ -1,4 +1,5 @@
-import ProductForm from "../components/ProductForm";
+// import ProductForm from "../components/ProductForm";
+import ProductForm from "../components/ProductFormChakra";
 import ProductsTable from "../components/ProductsTable";
 
 
