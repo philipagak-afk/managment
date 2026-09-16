@@ -1,6 +1,6 @@
 import { Table } from "react-bootstrap";
 // import { useProducts } from "../hooks/useProducts";
-import UpdateProduct from "./Updateproduct";
+import UpdateProduct from "./UpdateProduct";
 import DeleteProduct from "./DeleteProducts";
 import { useRealtimeProducts } from "../hooks/useRealtimeProducts";
 
