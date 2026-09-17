@@ -16,8 +16,7 @@ import { addDoc, collection } from 'firebase/firestore';
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { db } from '../firebase';
-export default 
-function ProductForm() {
+export default function ProductForm() {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [product, setProduct] = useState({
     name: "",

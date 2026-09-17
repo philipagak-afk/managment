@@ -1,15 +1,15 @@
 // import ProductForm from "../components/ProductForm";
 import ProductForm from "../components/ProductFormChakra";
-import ProductsTable from "../components/ProductsTable";
-
+import ProductsTable from "../components/ProductTableChakra";
+// import ProductsTable from "../components/ProductsTable";
 
 function Products() {
   return (
     <div>
-    <ProductForm/>
-      <ProductsTable/>
+      <ProductForm />
+      <ProductsTable />
     </div>
-  )
+  );
 }
 
-export default Products
+export default Products;

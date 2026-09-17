@@ -2,54 +2,39 @@ import {
   Table,
   Thead,
   Tbody,
+  Tfoot,
   Tr,
   Th,
-  Td,
+  TableCaption,
   TableContainer,
-} from "@chakra-ui/react";
-
-import UpdateCategory from "./UpdateCategory";
-import DeleteCategory from "./DeleteCategory";
-
-import { useRealtimeCategories } from "../hooks/useRealtimeCategories";
-
+} from '@chakra-ui/react'
 function CategoriesTable() {
-  const { categories } = useRealtimeCategories();
-
   return (
     <TableContainer>
-      <Table variant="simple">
+      <Table variant='simple'>
+        <TableCaption>Imperial to metric conversion factors</TableCaption>
         <Thead>
           <Tr>
             <Th>Name</Th>
-            <Th>Actions</Th>
+              <Th>Updated On</Th>
+              <Th>Stock</Th>
+              <Th></Th>
           </Tr>
         </Thead>
-
         <Tbody>
-          {categories?.map((category) => (
-            <Tr key={category.id}>
-              <Td>{category.name}</Td>
-
-              <Td>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                  }}
-                >
-                  <UpdateCategory currentCategory={category} />
-
-                  <DeleteCategory category={category} />
-                </div>
-              </Td>
-            </Tr>
-          ))}
+        
         </Tbody>
+        <Tfoot>
+          <Tr>
+            <Th>Name</Th>
+              <Th>Update On</Th>
+              <Th></Th>
+          </Tr>
+        </Tfoot>
       </Table>
-    </TableContainer>
-  );
-}
+    </TableContainer>  )
+    }
 
-export default CategoriesTable;
+
+
+export default CategoriesTable
