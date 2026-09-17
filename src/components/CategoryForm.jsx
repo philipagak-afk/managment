@@ -23,7 +23,7 @@ function CategoryForm() {
     const[name , setName] = useState("")
     const [error, setError] = useState(""); 
 
-    const handleCreateProduct = async (e) => {
+    const handleCreateCategory = async (e) => {
     e.preventDefault();
     try {
       setIsLoading(true);
@@ -37,7 +37,7 @@ function CategoryForm() {
         updatedOn: Date.now()
       }
 
-      await addDoc(collectionRef, newProduct)
+      await addDoc(collectionRef, newCategory)
 
       toast.success("product created successfully")
       onClose()
@@ -62,7 +62,7 @@ function CategoryForm() {
           <ModalHeader>Create Category</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <form id="create-category" onSubmit={()=>{}}>
+            <form id="create-category" onSubmit={handleCreateCategory}>
               <FormControl 
               
               >
